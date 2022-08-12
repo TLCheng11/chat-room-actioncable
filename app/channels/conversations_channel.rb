@@ -5,7 +5,7 @@ class ConversationsChannel < ApplicationCable::Channel
   end
 
   def receive(data)
-    # ActionCable.server.broadcast "conversations_channel", "I received the data!"
+    ActionCable.server.broadcast "conversations_channel", "I received the data!"
   end
 
   def unsubscribed
