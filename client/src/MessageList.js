@@ -6,11 +6,15 @@ export default function MessageList() {
   const cable = useContext(ActionCableContext)
   
   useEffect(() => {
-    // const channel = cable.subscriptions.create({
-    //   channel: "ConversationsChannel"
-    // })
+    const channel = cable.subscriptions.create({
+      channel: "ConversationsChannel"
+    }, {
+      received(data) {
+        console.log(data)
+      }
+    })
 
-    const channel = cable.subscriptions.create("conversations_channel")
+    // const channel = cable.subscriptions.create("conversations_channel")
     // const channel = cable.subscriptions.create("ConversationsChannel")
 
     setChannel(channel)
@@ -21,7 +25,7 @@ export default function MessageList() {
   },[])
 
   function sendData() {
-    channel.send("some data")
+    channel.send({ message: "This is a cool chat app." })
   }
 
   return (
