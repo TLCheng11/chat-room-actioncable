@@ -9,7 +9,7 @@ export default function MessageList() {
     const channel = cable.subscriptions.create({
       channel: "ConversationsChannel"
     }, {
-      received(data) {
+      received: (data) => {
         console.log(data)
       }
     })
