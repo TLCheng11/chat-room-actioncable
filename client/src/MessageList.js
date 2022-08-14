@@ -1,35 +1,52 @@
-import { useContext, useEffect, useState } from 'react';
-import { ActionCableContext } from '.';
+import { useEffect, useState } from 'react';
+import { ActionCableConsumer } from 'react-actioncable-provider';
 
 export default function MessageList() {
-  const [channel, setChannel] = useState("")
-  const cable = useContext(ActionCableContext)
-  
-  useEffect(() => {
-    const channel = cable.subscriptions.create({
-      channel: "ConversationsChannel"
-    }, {
-      received: (data) => {
-        console.log(data)
-      }
-    })
-
-    // const channel = cable.subscriptions.create("conversations_channel")
-    // const channel = cable.subscriptions.create("ConversationsChannel")
-
-    setChannel(channel)
-
-    return () => {
-      channel.unsubscribe()
-    }
-  },[])
+  const [message, setMessage] = useState("")
+  const [channelInput, setchannelInput] = useState(0)
+  const [channel, setchannel] = useState(0);
 
   function sendData() {
-    channel.send({ message: "This is a cool chat app." })
+    fetch(`/conversations`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({
+        channel_id: channel,
+        message: message
+      })
+    })
   }
+
+  function joinChannel(e) {
+    setchannel(channelInput)
+    fetch(`/conversations/join-channel`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({
+        channel_id: channelInput
+      })
+    })
+  };
+
+  function handleReceivedConversation(response) {
+    console.log(response)
+  };
 
   return (
     <div>
+      <ActionCableConsumer
+        channel={{ channel: 'ConversationsChannel', channel_id: channel }}
+        onReceived={handleReceivedConversation}
+      />
+      <input type="number" value={channelInput} onChange={e => setchannelInput(e.target.value)}></input>
+      <button onClick={joinChannel}>Set channel</button>
+      <input value={message} onChange={e => setMessage(e.target.value)}></input>
       <button onClick={sendData}>Send data</button>
     </div>
   );

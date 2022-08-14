@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "articles#index"
   mount ActionCable.server => '/cable'
+
   resources :conversations, only: [:index, :create]
-  resources :messages, only: [:create]
+  post "conversations/join-channel", to: "conversations#join_channel"
 end
